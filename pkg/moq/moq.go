@@ -141,8 +141,8 @@ func (m *Mocker) Mock(w io.Writer, name ...string) error {
 				Name: meth.Name(),
 			}
 			obj.Methods = append(obj.Methods, method)
-			method.Params = m.extractArgs(sig, sig.Params(), "in%d")
-			method.Returns = m.extractArgs(sig, sig.Results(), "out%d")
+			method.Params = m.extractArgs(sig.Variadic(), sig.Params(), "in%d")
+			method.Returns = m.extractArgs(false, sig.Results(), "out%d")
 
 			for _, param := range method.Params {
 				paramCache[param.Name] = append(paramCache[param.Name], param)
@@ -207,7 +207,7 @@ func (m *Mocker) packageQualifier(pkg *types.Package) string {
 	return pkg.Name()
 }
 
-func (m *Mocker) extractArgs(sig *types.Signature, list *types.Tuple, nameFormat string) []*param {
+func (m *Mocker) extractArgs(argsVariadic bool, list *types.Tuple, nameFormat string) []*param {
 	var params []*param
 	listLen := list.Len()
 	for ii := 0; ii < listLen; ii++ {
@@ -218,7 +218,7 @@ func (m *Mocker) extractArgs(sig *types.Signature, list *types.Tuple, nameFormat
 		}
 		typename := types.TypeString(p.Type(), m.packageQualifier)
 		// check for final variadic argument
-		variadic := sig.Variadic() && ii == listLen-1 && typename[0:2] == "[]"
+		variadic := argsVariadic && ii == listLen-1 && typename[0:2] == "[]"
 		param := &param{
 			Name:      name,
 			LocalName: name,
