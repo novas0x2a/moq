@@ -72,7 +72,7 @@ func (mock *{{$obj.InterfaceName}}Mock) {{.Name}}({{.Arglist}}) {{.ReturnArglist
 		{{- end }}
 	}{
 		{{- range .Params }}
-		{{ .Name | Exported }}: {{ .Name }},
+		{{ .Name | Exported }}: {{ .LocalName }},
 		{{- end }}
 	}
 	lock{{$obj.InterfaceName}}Mock{{.Name}}.Lock()
